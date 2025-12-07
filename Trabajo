@@ -1,1 +1,39 @@
+TRABAJO DE WALLAPOP
+Un script que recoge anuncios de una categoría concreta, los guarda/enriquece, los mete en Elasticsearch y luego los visualizas y alertas con Kibana y Elastalert2
+
+Primero antes del polling
+1. Categoría-> ciclomotores y motos 
+2. Poller en Python que llame a la web de wallapop con el filtro de dia de hoy y la categoria 
+3. Para cada anuncio calcular campos nuevos (suspicius keywords, relative_price_index,risk score), guardarlos dentro del json
+
+Despues del polling
+4. Ponerlo en elasticsearch
+5. Crear dashboard en kibana
+6. Configurar alertas con Elastalert2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
