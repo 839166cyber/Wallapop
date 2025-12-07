@@ -11,6 +11,20 @@ Despues del polling
 5. Crear dashboard en kibana
 6. Configurar alertas con Elastalert2
 
+Definimos patrones normales: 
+Rango de precios típico por marca/modelo
+Condiciones: nueva, como nueva, buen estado, aceptable
+Descripciones con: marca, modelo, año, kilometraje, ITV, documentación
+
+Señales de fraude en motos:
+Palabras clave sospechosas: "sin papeles", "para piezas", "urgente", "no ITV", "importación", "km desconocidos"
+Precios muy bajos
+Vendedor con muchas motos similares publicadas el mismo día
+Falta de información sobre documentación o ITV
+Descripciones muy cortas o copiar-pega
+
+
+
 
 
 
