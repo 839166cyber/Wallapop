@@ -33,6 +33,20 @@ Los objetos que usaremos seran todos los de la categoría enriquecidos
 También debemos buscarlo con un ID específico del ITEM
 
 Sección 3- Modelo de Datos Comprendiendo las respuestas de la API de Wallapop
+Ej. del resultado al hacer un polling a un ID de wallapop
+Taxonomy es las catergorías en las que aparece el producto 
+Campos importantes para el enriquecimiento
+Item detail es opcional ya que consume mucho más ancho de banda 
+
+
+Sección 4 - Script de wallapop - Recepción de datos
+Solo recopilar elementos del DIA
+
+4.1. Search Endpoint and Filter Options 
+Categoria 12800-> ciclomotores
+Rango de precios lo quitariamos-> 1 euros es chano 
+4.2 HTTP Headers
+Dos cabeceras dadas 
 
 
 
