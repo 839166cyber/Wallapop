@@ -23,12 +23,16 @@ Vendedor con muchas motos similares publicadas el mismo día
 Falta de información sobre documentación o ITV
 Descripciones muy cortas o copiar-pega
 
+Sección 2 — Selección de Escenario y Categoría
 2.4 Alcance de monitoreo
 Recogemos datos de toda la categoría 
 Alcance geográfico en ZGZ
 Frecuencia de polling 10-30 minutos
 Porque la distancia que hemos elegido es esa y como actua en neustro detector
+Los objetos que usaremos seran todos los de la categoría enriquecidos 
+También debemos buscarlo con un ID específico del ITEM
 
+Sección 3- Modelo de Datos Comprendiendo las respuestas de la API de Wallapop
 
 
 
