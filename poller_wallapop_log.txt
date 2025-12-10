@@ -1,0 +1,289 @@
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 23 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 16
+✓ Ítems para análisis: 24
+
+✓ Ítems descartados (ya estaban en JSON): 19
+✓ Ítems NUEVOS listos para enriquecer y guardar: 5
+
+Enriqueciendo SOLO datos nuevos...
+✓ 5 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 60.00€ | Max: 7000.00€ | Media: 1911.80€
+   Mediana: 499.00€ | Desv. Std: 2940.99€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 70 | Media: 30.0
+
+   🔴 ALTO RIESGO (>=70): 1
+   🟡 RIESGO MEDIO (40-69): 2
+   🟢 BAJO RIESGO (<40): 2
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 28 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 16
+✓ Ítems para análisis: 24
+
+✓ Ítems descartados (ya estaban en JSON): 24
+✓ Ítems NUEVOS listos para enriquecer y guardar: 0
+
+Enriqueciendo SOLO datos nuevos...
+✓ 0 items enriquecidos
+
+
+⚠️  No hay datos NUEVOS para guardar.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 28 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 16
+✓ Ítems para análisis: 24
+
+✓ Ítems descartados (ya estaban en JSON): 20
+✓ Ítems NUEVOS listos para enriquecer y guardar: 4
+
+Enriqueciendo SOLO datos nuevos...
+✓ 4 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 2400.00€ | Max: 6800.00€ | Media: 4800.00€
+   Mediana: 5000.00€ | Desv. Std: 1856.52€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 30 | Media: 12.5
+
+   🔴 ALTO RIESGO (>=70): 0
+   🟡 RIESGO MEDIO (40-69): 0
+   🟢 BAJO RIESGO (<40): 4
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 32 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 16
+✓ Ítems para análisis: 24
+
+✓ Ítems descartados (ya estaban en JSON): 13
+✓ Ítems NUEVOS listos para enriquecer y guardar: 11
+
+Enriqueciendo SOLO datos nuevos...
+✓ 11 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 100.00€ | Max: 15500.00€ | Media: 3064.55€
+   Mediana: 2000.00€ | Desv. Std: 4400.83€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 60 | Media: 23.2
+
+   🔴 ALTO RIESGO (>=70): 0
+   🟡 RIESGO MEDIO (40-69): 5
+   🟢 BAJO RIESGO (<40): 6
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 43 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 13
+✓ Ítems para análisis: 27
+
+✓ Ítems descartados (ya estaban en JSON): 16
+✓ Ítems NUEVOS listos para enriquecer y guardar: 11
+
+Enriqueciendo SOLO datos nuevos...
+✓ 11 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 1.00€ | Max: 15500.00€ | Media: 4065.00€
+   Mediana: 2125.00€ | Desv. Std: 5477.27€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 60 | Media: 25.9
+
+   🔴 ALTO RIESGO (>=70): 0
+   🟡 RIESGO MEDIO (40-69): 4
+   🟢 BAJO RIESGO (<40): 7
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 54 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 13
+✓ Ítems para análisis: 27
+
+✓ Ítems descartados (ya estaban en JSON): 11
+✓ Ítems NUEVOS listos para enriquecer y guardar: 16
+
+Enriqueciendo SOLO datos nuevos...
+✓ 16 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 45.00€ | Max: 8000.00€ | Media: 1484.06€
+   Mediana: 1100.00€ | Desv. Std: 2020.94€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 40 | Media: 16.2
+
+   🔴 ALTO RIESGO (>=70): 0
+   🟡 RIESGO MEDIO (40-69): 6
+   🟢 BAJO RIESGO (<40): 10
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 70 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 13
+✓ Ítems para análisis: 27
+
+✓ Ítems descartados (ya estaban en JSON): 19
+✓ Ítems NUEVOS listos para enriquecer y guardar: 8
+
+Enriqueciendo SOLO datos nuevos...
+✓ 8 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 450.00€ | Max: 6100.00€ | Media: 2525.00€
+   Mediana: 1500.00€ | Desv. Std: 2340.63€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 70 | Media: 31.2
+
+   🔴 ALTO RIESGO (>=70): 1
+   🟡 RIESGO MEDIO (40-69): 4
+   🟢 BAJO RIESGO (<40): 3
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.
+======================================================================
+Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy
+======================================================================
+
+Cargados 78 IDs existentes para el día.
+🔍 Buscando: 'moto' (category_id=14000)
+   → Total para 'moto' adquirido: 40 items
+
+Eliminando duplicados internos de 40 items...
+✓ Items únicos (internos): 40 | Duplicados eliminados: 0
+
+Filtro de ruido: eliminando indumentaria y equipo personal...
+✓ Ítems descartados (Indumentaria): 13
+✓ Ítems para análisis: 27
+
+✓ Ítems descartados (ya estaban en JSON): 24
+✓ Ítems NUEVOS listos para enriquecer y guardar: 3
+
+Enriqueciendo SOLO datos nuevos...
+✓ 3 items enriquecidos
+
+
+======================================================================
+📊 ESTADÍSTICAS DEL DATASET
+======================================================================
+💰 Precios:
+   Min: 24.90€ | Max: 2200.00€ | Media: 1274.97€
+   Mediana: 1600.00€ | Desv. Std: 1123.39€
+
+⚠️  Risk Scores:
+   Min: 0 | Max: 40 | Media: 13.3
+
+   🔴 ALTO RIESGO (>=70): 0
+   🟡 RIESGO MEDIO (40-69): 1
+   🟢 BAJO RIESGO (<40): 2
+======================================================================
+
+✅ Archivo guardado: wallapop_motos_20251210.json. Los datos se anexarán en futuras llamadas.

@@ -1,13 +1,14 @@
-import requests
 import json
 from datetime import datetime, timezone
 import time
 from statistics import mean, median, stdev
 import os
 import sys 
+import requests
+import ctypes
 
 if os.name == "nt":  # Solo Windows
-    import ctypes
+    
     # Habilita UTF-8 en Windows CMD
     os.system("chcp 65001 >nul")
     sys.stdout.reconfigure(encoding='utf-8')
@@ -122,8 +123,8 @@ def is_clothing_or_personal_gear(item):
         "traje", "talla", "alforja", "mochila","maleta", "chaleco",
         "protector", "protección", "impermeable", "capa de lluvia ", "zapatos", 
         "caballete", "mini", "herramientas", "candado", "antirrobo", "cubremanos",
-        "alquiler", "garaje", "baul", "maleta"
-    ] 
+        "alquiler", "garaje", "baul", "maleta","candado", "antirrobo","llaves"
+] 
     
     if any(keyword in title for keyword in CLOTHING_KEYWORDS):
             return True 
