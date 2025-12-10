@@ -3,14 +3,52 @@ import json
 from datetime import datetime, timezone
 import time
 from statistics import mean, median, stdev
+import os # Necesario para verificar la existencia del archivo
 
-
+# ... https://www.facebook.com/autoxec/videos/la-diferencia-entre-un-header-y-un-m%C3%BAltiple-original-radica-en-c%C3%B3mo-manejan-el-f/1599617577481601/ ...
 URL = "https://api.wallapop.com/api/v3/search"
 HEADERS = {
     "Host": "api.wallapop.com",
     "X-DeviceOS": "0"
 }
 
+# --------------------------------------------------------------------------
+# NUEVA FUNCIÓN: Cargar IDs del archivo existente
+# --------------------------------------------------------------------------
+
+def get_daily_filename():
+    """Genera el nombre del archivo diario basado en la fecha UTC."""
+    today = datetime.now(timezone.utc).strftime("%Y%m%d")
+    return f"wallapop_motos_{today}.json"
+
+
+def load_existing_ids(filename):
+    """
+    Lee el archivo JSON Lines y retorna un set con todos los IDs existentes.
+    Esto permite la deduplicación persistente entre ejecuciones del poller.
+    """
+    existing_ids = set()
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        # Asume que la línea es un objeto JSON válido y extrae el 'id'
+                        item = json.loads(line)
+                        if item_id := item.get("id"):
+                            existing_ids.add(item_id)
+        except Exception as e:
+            print(f"⚠️ Error al leer IDs existentes del archivo {filename}. Se comenzará sin IDs previos.")
+            # Si el archivo está corrupto, es mejor empezar de cero que fallar.
+            pass 
+    return existing_ids
+
+# --------------------------------------------------------------------------
+# ... [El resto de funciones (fetch_all_pages, remove_duplicates, 
+# is_clothing_or_personal_gear, filter_clothing_items, etc.) se mantienen igual] ...
+# --------------------------------------------------------------------------
+
+# Aquí iría el resto de tus funciones (remove_duplicates, filter_clothing_items, detect_suspicious_keywords, etc.)
 
 def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.889085"):
     """
@@ -81,7 +119,7 @@ def remove_duplicates(items):
 
 
 # --------------------------------------------------------------------------
-# NUEVA FUNCIÓN PARA EXCLUIR INDUMENTARIA DE MOTO
+# FUNCIÓN PARA EXCLUIR INDUMENTARIA DE MOTO
 # --------------------------------------------------------------------------
 
 def is_clothing_or_personal_gear(item):
@@ -90,21 +128,20 @@ def is_clothing_or_personal_gear(item):
     
     title = item.get("title", "").lower()
     description = item.get("description", "").lower()
-    price = item.get("price", {}).get("amount", 0)
     
     # Palabras clave de indumentaria y equipo personal que queremos EXCLUIR
     CLOTHING_KEYWORDS = [
         "casco", "guante", "chaqueta", "pantalón", "pantalon", "botas", 
         "espaliers", "espalda", "goretex", "chamarra", "bota", "mono", 
-        "traje", "talla", "alforja", "mochila"
-    ]
+        "traje", "talla", "alforja", "mochila","baul", "maleta", "chaleco",
+        "protector", "protección", "impermeable", "capa de lluvia ", "baul", "zapatos", "caballete", "mini",
+        "herramientas", "herramientas", "candado", "antirrobo", "cubremanos", "alquiler","garaje"
+    ] 
     
-    # Si el precio es bajo (ej. menos de 300€) Y contiene palabras de ropa, lo descartamos.
-    # Mantenemos un umbral alto (300€) para no descartar ropa de muy alta gama, si existe.
-    if price < 300: 
-        if any(keyword in title for keyword in CLOTHING_KEYWORDS):
+    # Aquí se mantiene la lógica de filtrado de indumentaria para reducir el ruido
+    if any(keyword in title for keyword in CLOTHING_KEYWORDS):
             return True 
-        if any(keyword in description for keyword in CLOTHING_KEYWORDS):
+    if any(keyword in description for keyword in CLOTHING_KEYWORDS):
             return True 
 
     return False
@@ -124,8 +161,7 @@ def filter_clothing_items(items):
 
 def detect_suspicious_keywords(text):
     """Detecta palabras sospechosas en el texto."""
-    # Los términos como 'despiece' y 'escape' se mantienen aquí
-    # porque son INDICADORES DE RIESGO para piezas grandes, no accesorios de ruido.
+
     SUSPICIOUS_KEYWORDS = {
         "sin_papeles": ["sin papeles", "sin documentacion", "sin documento", "no papeles", "papeles pendientes"],
         "sin_itv": ["sin itv", "sin itp", "no itv", "no itp", "itv caducada", "itp caducada"],
@@ -134,7 +170,7 @@ def detect_suspicious_keywords(text):
         "robo_potencial": ["importacion", "importada", "procedencia dudosa", "comprada en", "encontrada"],
         "km_desconocido": ["km desconocidos", "kilometraje desconocido", "km incognita", "sin contar km"],
         "transferencia_pendiente": ["transferencia pendiente", "a mi nombre", "no esta a mi nombre", "nombre titular"],
-        "precio_bajo": ["ganga", "precio bajo", "muy barato", "casi nuevo", "como nuevo"],
+        "precio_bajo": ["ganga", "precio bajo", "muy barato", "casi nuevo", "como nuevo", "oferta", "chollo", "solo hoy"],
     }
     
     if not text:
@@ -248,7 +284,8 @@ def enrich_items(items):
 
 def save_daily_file(all_items, filename):
     """Guarda todos los items en fichero diario (JSON Lines format)"""
-    with open(filename, "w", encoding="utf-8") as f:
+    # *** MODO "a" (append/anexar) para acumular registros ***
+    with open(filename, "a", encoding="utf-8") as f:
         for item in all_items:
             f.write(json.dumps(item, ensure_ascii=False) + "\n")
     
@@ -292,6 +329,11 @@ if __name__ == "__main__":
     print("Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy")
     print("=" * 70 + "\n")
     
+    # --- Deduplicación Persistente: Cargar IDs existentes ---
+    daily_filename = get_daily_filename()
+    existing_ids = load_existing_ids(daily_filename)
+    print(f"Cargados {len(existing_ids)} IDs existentes para el día.")
+    
     all_items = []
     
     # 1. Búsqueda
@@ -310,29 +352,38 @@ if __name__ == "__main__":
             print(f"   ℹ No se encontraron items\n")
     
     # 2. Eliminación de duplicados (internos de la adquisición)
-    print(f"Eliminando duplicados de {len(all_items)} items...")
-    unique_items, dupes = remove_duplicates(all_items)
-    print(f"✓ Items únicos: {len(unique_items)} | Duplicados eliminados: {dupes}\n")
+    print(f"Eliminando duplicados internos de {len(all_items)} items...")
+    unique_items, dupes_internal = remove_duplicates(all_items)
+    print(f"✓ Items únicos (internos): {len(unique_items)} | Duplicados eliminados: {dupes_internal}\n")
     
-    # 3. FILTRADO DE INDUMENTARIA (NUEVO PASO SELECTIVO)
+    # 3. FILTRADO DE INDUMENTARIA
     print("Filtro de ruido: eliminando indumentaria y equipo personal...")
-    filtered_items, removed_count = filter_clothing_items(unique_items)
-    print(f"✓ Ítems descartados (Indumentaria): {removed_count}")
-    print(f"✓ Ítems para análisis (Motos, Piezas, Accesorios NO ropa): {len(filtered_items)}\n")
+    filtered_items, removed_clothing_count = filter_clothing_items(unique_items)
+    print(f"✓ Ítems descartados (Indumentaria): {removed_clothing_count}")
+    print(f"✓ Ítems para análisis: {len(filtered_items)}\n")
     
-    # 4. Enriquecimiento
-    print("Enriqueciendo datos...")
-    enriched_items = enrich_items(filtered_items)
-    print(f"✓ {len(enriched_items)} items enriquecidos\n")
+    # 4. FILTRADO DE DUPLICADOS PERSISTENTES (¡CLAVE!)
+    new_items_to_save = [
+        item for item in filtered_items if item.get("id") not in existing_ids
+    ]
+    duplicates_external = len(filtered_items) - len(new_items_to_save)
+    print(f"✓ Ítems descartados (ya estaban en JSON): {duplicates_external}")
+    print(f"✓ Ítems NUEVOS listos para guardar: {len(new_items_to_save)}\n")
     
-    # 5. Estadísticas
-    print_statistics(enriched_items)
+    # 5. Enriquecimiento (SOLO los nuevos)
+    print("Enriqueciendo SOLO datos nuevos...")
+    enriched_new_items = enrich_items(new_items_to_save)
+    print(f"✓ {len(enriched_new_items)} items enriquecidos\n")
     
-    # 6. Guardar
-    if enriched_items:
-        today = datetime.now(timezone.utc).strftime("%Y%m%d")
-        filename = f"wallapop_motos_{today}.json"
-        save_daily_file(enriched_items, filename)
-        print(f"✅ Archivo guardado: {filename}")
+    # 6. Estadísticas (basadas en todos los ítems únicos del día, no solo los nuevos)
+    # Para estadísticas completas del día, deberías cargar todos los items existentes
+    # y los nuevos, pero para mantenerlo simple, imprimimos solo sobre la nueva tanda.
+    if enriched_new_items:
+        print_statistics(enriched_new_items)
+    
+    # 7. Guardar
+    if enriched_new_items:
+        save_daily_file(enriched_new_items, daily_filename)
+        print(f"✅ Archivo guardado: {daily_filename}. Los datos se anexarán en futuras llamadas.")
     else:
-        print("\n⚠️  No hay datos para guardar")
+        print("\n⚠️  No hay datos NUEVOS para guardar.")
