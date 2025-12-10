@@ -7,7 +7,7 @@ import sys
 import requests
 import ctypes
 
-if os.name == "nt":  # Solo Windows
+if os.name == "nt": 
     
     # Habilita UTF-8 en Windows CMD
     os.system("chcp 65001 >nul")
