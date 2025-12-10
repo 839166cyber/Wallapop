@@ -5,8 +5,6 @@ import time
 from statistics import mean, median, stdev
 
 
-
-
 URL = "https://api.wallapop.com/api/v3/search"
 HEADERS = {
     "Host": "api.wallapop.com",
@@ -14,14 +12,18 @@ HEADERS = {
 }
 
 
-def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.889085", max_pages=10):
-    """Obtiene TODOS los items de una búsqueda con paginación."""
+def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.889085"):
+    """
+    Obtiene TODOS los items de una búsqueda con paginación,
+    continuando hasta que la API no devuelva más resultados para el día.
+    """
     all_items = []
     offset = 0
-    limit = 100
+    limit = 50
     page = 1
     
-    while page <= max_pages:
+    # Bucle infinito: solo se detiene con 'break' si la API deja de devolver items.
+    while True: 
         params = {
             "source": "search_box",
             "keywords": keywords,
@@ -35,8 +37,6 @@ def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.8
         }
         
         try:
-            print(f"   Página {page} (offset={offset})...", end=" ", flush=True)
-            
             response = requests.get(URL, params=params, headers=HEADERS, timeout=15)
             response.raise_for_status()
             data = response.json()
@@ -44,14 +44,11 @@ def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.8
             items = data.get("data", {}).get("section", {}).get("payload", {}).get("items", [])
             
             if not items:
-                print("(sin más items)")
                 break
             
-            print(f"✓ {len(items)} items")
             all_items.extend(items)
             
             if len(items) < limit:
-                print(f"   → Última página alcanzada")
                 break
             
             offset += limit
@@ -59,7 +56,6 @@ def fetch_all_pages(keywords, category_id, latitude="41.648823", longitude="-0.8
             time.sleep(0.5)
         
         except Exception as e:
-            print(f"❌ Error: {e}")
             break
     
     return all_items
@@ -83,8 +79,53 @@ def remove_duplicates(items):
     
     return unique_items, duplicates_removed
 
+
+# --------------------------------------------------------------------------
+# NUEVA FUNCIÓN PARA EXCLUIR INDUMENTARIA DE MOTO
+# --------------------------------------------------------------------------
+
+def is_clothing_or_personal_gear(item):
+    """Verifica si el ítem es probablemente indumentaria o accesorio personal
+    de bajo valor, que se desea eliminar como ruido."""
+    
+    title = item.get("title", "").lower()
+    description = item.get("description", "").lower()
+    price = item.get("price", {}).get("amount", 0)
+    
+    # Palabras clave de indumentaria y equipo personal que queremos EXCLUIR
+    CLOTHING_KEYWORDS = [
+        "casco", "guante", "chaqueta", "pantalón", "pantalon", "botas", 
+        "espaliers", "espalda", "goretex", "chamarra", "bota", "mono", 
+        "traje", "talla", "alforja", "mochila"
+    ]
+    
+    # Si el precio es bajo (ej. menos de 300€) Y contiene palabras de ropa, lo descartamos.
+    # Mantenemos un umbral alto (300€) para no descartar ropa de muy alta gama, si existe.
+    if price < 300: 
+        if any(keyword in title for keyword in CLOTHING_KEYWORDS):
+            return True 
+        if any(keyword in description for keyword in CLOTHING_KEYWORDS):
+            return True 
+
+    return False
+
+def filter_clothing_items(items):
+    """Filtra y elimina ítems que parezcan ser indumentaria de moto."""
+    filtered_items = []
+    removed_count = 0
+    for item in items:
+        if not is_clothing_or_personal_gear(item):
+            filtered_items.append(item)
+        else:
+            removed_count += 1
+            
+    return filtered_items, removed_count
+
+
 def detect_suspicious_keywords(text):
     """Detecta palabras sospechosas en el texto."""
+    # Los términos como 'despiece' y 'escape' se mantienen aquí
+    # porque son INDICADORES DE RIESGO para piezas grandes, no accesorios de ruido.
     SUSPICIOUS_KEYWORDS = {
         "sin_papeles": ["sin papeles", "sin documentacion", "sin documento", "no papeles", "papeles pendientes"],
         "sin_itv": ["sin itv", "sin itp", "no itv", "no itp", "itv caducada", "itp caducada"],
@@ -125,16 +166,17 @@ def calculate_risk_score(item, all_prices, seller_items_count):
     """Calcula risk_score de 0-100 basado en múltiples factores."""
     score = 0
     
-    # Factor 1: Precio muy bajo
+    # Factor 1: Precio muy bajo (Sección 8.2 A.1)
     if all_prices:
         avg_price = mean(all_prices)
-        if price := item.get("price", {}).get("amount"):
+        price = item.get("price", {}).get("amount")
+        if price:
             if price < avg_price * 0.4:
                 score += 40
             elif price < avg_price * 0.6:
                 score += 20
     
-    # Factor 2: Palabras sospechosas
+    # Factor 2: Palabras sospechosas (Sección 8.2 B)
     title = item.get("title", "")
     description = item.get("description", "")
     text = f"{title} {description}".lower()
@@ -142,15 +184,15 @@ def calculate_risk_score(item, all_prices, seller_items_count):
     suspicious = detect_suspicious_keywords(text)
     score += min(len(suspicious) * 15, 30)
     
-    # Factor 3: Descripción muy corta
+    # Factor 3: Descripción muy corta (Sección 8.2 D)
     if description and len(description) < 50:
         score += 10
     
-    # Factor 4: Muchos anuncios del mismo vendedor
+    # Factor 4: Muchos anuncios del mismo vendedor (Sección 8.2 C.1)
     if seller_items_count and seller_items_count > 3:
         score += 20
     
-    # Factor 5: Sin imágenes
+    # Factor 5: Sin imágenes (Señal de fraude)
     images = item.get("images", [])
     if not images:
         score += 5
@@ -176,7 +218,8 @@ def enrich_items(items):
     for item in items:
         enriched = item.copy()
         
-        enriched["crawl_timestamp"] = datetime.now(timezone.utc).isoformat() + "Z"
+        # Generar timestamp de rastreo
+        enriched["crawl_timestamp"] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
         
         price = item.get("price", {}).get("amount")
         enriched["relative_price_index"] = calculate_relative_price_index(price, prices)
@@ -187,6 +230,7 @@ def enrich_items(items):
         seller_id = item.get("user_id")
         seller_count = seller_counts.get(seller_id, 0)
         
+        # Creación del diccionario de enriquecimiento (Sección 3.3)
         enriched["enrichment"] = {
             "suspicious_keywords": suspicious_kw,
             "suspicious_keywords_count": len(suspicious_kw),
@@ -208,7 +252,6 @@ def save_daily_file(all_items, filename):
         for item in all_items:
             f.write(json.dumps(item, ensure_ascii=False) + "\n")
     
-    print(f"✓ Guardados {len(all_items)} anuncios en {filename}\n")
 
 def print_statistics(items):
     """Imprime estadísticas del dataset"""
@@ -224,65 +267,72 @@ def print_statistics(items):
     
     if prices:
         print(f"💰 Precios:")
-        print(f"   Min: {min(prices):.2f}€ | Max: {max(prices):.2f}€ | Media: {mean(prices):.2f}€")
+        print(f"   Min: {min(prices):.2f}€ | Max: {max(prices):.2f}€ | Media: {mean(prices):.2f}€")
         if len(prices) > 1:
-            print(f"   Mediana: {median(prices):.2f}€ | Desv. Std: {stdev(prices):.2f}€")
+            print(f"   Mediana: {median(prices):.2f}€ | Desv. Std: {stdev(prices):.2f}€")
     
     if risk_scores:
-        print(f"\n⚠️  Risk Scores:")
-        print(f"   Min: {min(risk_scores)} | Max: {max(risk_scores)} | Media: {mean(risk_scores):.1f}")
+        print(f"\n⚠️  Risk Scores:")
+        print(f"   Min: {min(risk_scores)} | Max: {max(risk_scores)} | Media: {mean(risk_scores):.1f}")
         
+        # Umbrales de riesgo
         high_risk = len([r for r in risk_scores if r >= 70])
         medium_risk = len([r for r in risk_scores if 40 <= r < 70])
         low_risk = len([r for r in risk_scores if r < 40])
         
-        print(f"\n   🔴 ALTO RIESGO (>=70): {high_risk}")
-        print(f"   🟡 RIESGO MEDIO (40-69): {medium_risk}")
-        print(f"   🟢 BAJO RIESGO (<40): {low_risk}")
+        print(f"\n   🔴 ALTO RIESGO (>=70): {high_risk}")
+        print(f"   🟡 RIESGO MEDIO (40-69): {medium_risk}")
+        print(f"   🟢 BAJO RIESGO (<40): {low_risk}")
     
     print("=" * 70 + "\n")
 
 if __name__ == "__main__":
+    
     print("=" * 70)
-    print("Obteniendo MOTOS Y CICLOMOTORES de hoy (CON ENRIQUECIMIENTO)")
+    print("Obteniendo MOTOS, PIEZAS Y ACCESORIOS (EXCLUYENDO INDUMENTARIA) de hoy")
     print("=" * 70 + "\n")
     
     all_items = []
     
+    # 1. Búsqueda
     search_queries = [
-        ("moto", 12800),
-        ("ciclomotor", 12800),
-        ("scooter", 12800),
+        ("moto", 14000),
     ]
     
     for keywords, category_id in search_queries:
         print(f"🔍 Buscando: '{keywords}' (category_id={category_id})")
-        items = fetch_all_pages(keywords, category_id, max_pages=10)
+        items = fetch_all_pages(keywords, category_id) 
         
         if items:
-            print(f"   → Total para '{keywords}': {len(items)} items\n")
+            print(f"   → Total para '{keywords}' adquirido: {len(items)} items\n")
             all_items.extend(items)
         else:
-            print(f"   ℹ No se encontraron items\n")
+            print(f"   ℹ No se encontraron items\n")
     
-    # Eliminar duplicados (MEJORADO)
+    # 2. Eliminación de duplicados (internos de la adquisición)
     print(f"Eliminando duplicados de {len(all_items)} items...")
     unique_items, dupes = remove_duplicates(all_items)
     print(f"✓ Items únicos: {len(unique_items)} | Duplicados eliminados: {dupes}\n")
     
-    # ENRIQUECER
+    # 3. FILTRADO DE INDUMENTARIA (NUEVO PASO SELECTIVO)
+    print("Filtro de ruido: eliminando indumentaria y equipo personal...")
+    filtered_items, removed_count = filter_clothing_items(unique_items)
+    print(f"✓ Ítems descartados (Indumentaria): {removed_count}")
+    print(f"✓ Ítems para análisis (Motos, Piezas, Accesorios NO ropa): {len(filtered_items)}\n")
+    
+    # 4. Enriquecimiento
     print("Enriqueciendo datos...")
-    enriched_items = enrich_items(unique_items)
+    enriched_items = enrich_items(filtered_items)
     print(f"✓ {len(enriched_items)} items enriquecidos\n")
     
-    # Estadísticas
+    # 5. Estadísticas
     print_statistics(enriched_items)
     
-    # Guardar
+    # 6. Guardar
     if enriched_items:
         today = datetime.now(timezone.utc).strftime("%Y%m%d")
-        filename = f"wallapop_motos_ciclomotores_{today}.json"
+        filename = f"wallapop_motos_{today}.json"
         save_daily_file(enriched_items, filename)
         print(f"✅ Archivo guardado: {filename}")
     else:
-        print("\n⚠️  No hay datos para guardar")
+        print("\n⚠️  No hay datos para guardar")
